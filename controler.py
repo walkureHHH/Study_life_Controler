@@ -1,6 +1,8 @@
 import os
 import json
 import pandas
+import colorama
+colorama.init(autoreset=True)
 from sys import argv
 from prettytable import PrettyTable
 
@@ -17,7 +19,7 @@ def init(time_type,switch):
     # generate folders and conf files
     num = 1
     while True:
-        a = input('name of course %d (. to finish): '%num)
+        a = input(colorama.Fore.YELLOW+'name of course %d (. to finish): '%num)
         if a == '':
             pass
         elif a == '.':
@@ -25,7 +27,7 @@ def init(time_type,switch):
         else:
             if info_switch == True:
                 while True:
-                    b = input('info for course %d : '%num)
+                    b = input(colorama.Fore.CYAN+'info for course %d : '%num)
                     if b == '':
                         pass
                     else:
@@ -52,7 +54,7 @@ def init(time_type,switch):
         week=['Monday','Tuesday','Wednesday','Thursday','Friday']
     if timetable_type==2:
         week=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
-    time_span=input('Time span(example:"8-21"):')
+    time_span=input(colorama.Fore.WHITE+'Time span(example:"8-21"):')
     begin_time=int(time_span.split('-')[0])
     end_time=int(time_span.split('-')[1])
     hours=[m for m in range(begin_time,end_time+1)]
@@ -66,19 +68,19 @@ def init(time_type,switch):
     index_list.append('')
     f1=open(PATH+'/'+'.controler.config/timetable.csv',encoding='utf-8',mode='a')
     for hour in hours:
-        print('The course in %d:00 - %d:00:'%(hour,hour+1))
-        print('('+course_string+')')
+        print(colorama.Fore.WHITE+colorama.Back.RED+'The course in %d:00 - %d:00:'%(hour,hour+1))
+        print(colorama.Fore.GREEN+'('+course_string+')')
         temp1=[]
         temp2=[]
         for day in week:
-            print('for '+day)
+            print(colorama.Fore.WHITE+'for '+colorama.Back.RED+day)
             while True:
-                in_of_course=input('Input the index of courses: ')
+                in_of_course=input(colorama.Fore.RED+'Input the index of courses: ')
                 if in_of_course in index_list:
                     break
                 else:
                     print('ERROR index please input again')
-            venue=input('The venue of it: ')
+            venue=input(colorama.Fore.BLUE+'The venue of it: ')
             if in_of_course != '':
                 temp1.append(courses[int(in_of_course)])
             else:
