@@ -1,5 +1,8 @@
 import os
+import json
+import pandas
 from sys import argv
+from prettytable import PrettyTable
 
 def init(time_type,switch):
     courses=[]
@@ -35,7 +38,6 @@ def init(time_type,switch):
     os.mkdir(PATH+'/'+'Resourse')
     os.mkdir(PATH+'/'+'Note')
     os.mkdir(PATH+'/'+'.controler.config')
-    os.mkdir(PATH+'/'+'.controler.config/Timetable')
     for i in courses:
         os.mkdir(PATH+'/'+'Assignment'+'/'+i)
     for j in courses:
@@ -44,14 +46,6 @@ def init(time_type,switch):
         f.close()
     for p in courses:
         os.mkdir(PATH+'/'+'Note'+'/'+p)
-    f = open(PATH+'/'+'.controler.config/conf',encoding='utf-8',mode='a')
-    for k in courses:
-        f.write(k+'|')
-    if info_switch == True:
-        f.write('\n')
-        for l in course_info:
-            f.write(l+'|')
-    f.close()
 
     # begin generate timetable(.csv)
     if timetable_type==1:
@@ -70,6 +64,7 @@ def init(time_type,switch):
         index_list.append(str(index))
         index+=1
     index_list.append('')
+    f1=open(PATH+'/'+'.controler.config/timetable.csv',encoding='utf-8',mode='a')
     for hour in hours:
         print('The course in %d:00 - %d:00:'%(hour,hour+1))
         print('('+course_string+')')
@@ -87,8 +82,11 @@ def init(time_type,switch):
             if in_of_course != '':
                 temp1.append(courses[int(in_of_course)])
             else:
-                temp1.append('')
-            temp2.append(venue)
+                temp1.append('-')
+            if venue=='':
+                temp2.append('-')
+            else:
+                temp2.append(venue)
         string1=''
         for n in temp1:
             string1+=n+','
@@ -97,19 +95,53 @@ def init(time_type,switch):
         for o in temp2:
             string2+=o+','
         string2+='\n'
-        f1=open(PATH+'/'+'.controler.config/Timetable/courses.csv',encoding='utf-8',mode='a')
-        f2=open(PATH+'/'+'.controler.config/Timetable/venue.csv',encoding='utf-8',mode='a')
         f1.write(string1)
-        f2.write(string2)
+        f1.write(string2)
     f1.close()
-    f2.close()
+    f = open(PATH+'/'+'.controler.config/conf',encoding='utf-8',mode='w')
+    json_dict={'courses':courses,'information':course_info,'timetable type':timetable_type,'info_switch':info_switch,'begin time':begin_time,'end time':end_time}
+    json_data=json.dumps(json_dict,sort_keys=True,indent=4)
+    f.write(json_data)
+    f.close()
 
 def assignment():
     print('developing')
     pass
 
-def show_timetable():
-    pass
+def show_timetable(num_of_each_rows):
+    PATH=os.getcwd()
+    timetable=pandas.read_csv(PATH+'/.controler.config/timetable.csv',header=None)
+    with open(PATH+'/'+'.controler.config/conf','r',encoding='utf-8') as f:
+        json_dict=json.load(f,encoding='utf-8')
+    if json_dict['timetable type']==1:
+        num_of_days=5
+        days=['Monday','Tuesday','Wednesday','Thursday','Friday']
+    elif json_dict['timetable type']==2:
+        num_of_days=7
+        days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+    begin_time=json_dict['begin time']
+    end_time=json_dict['end time']
+    x = PrettyTable()
+    time_column=[]
+    for k in range(begin_time,end_time+1):
+        time_column.append('%d:00-%d:00'%(k,k+1))
+        time_column.append(' ')
+    x.add_column('Time',time_column)
+    for j in range(0,num_of_days):
+        x.add_column(days[j],timetable[j].tolist())
+    num = 0
+    for i in range(0,int(num_of_days/num_of_each_rows)):
+        field=['Time']
+        for l in range(num,num+num_of_each_rows):
+            field.append(days[l])
+        print(x.get_string(fields=field))
+        num+=num_of_each_rows
+    if num != num_of_days:
+        field=['Time']
+        for m in range(num,num_of_days):
+            field.append(days[m])
+        print(x.get_string(fields=field))
+
 
 def modify_timetable():
     pass
@@ -121,12 +153,16 @@ def import_conf():
     pass
         
 init_o=['-t','-i'] # all legal options for init
-pull_o=['-a','-l','-s'] # all legal option for pull
+# t for timetable type, i for information switch
+pull_o=['-a','-l','-s'] # all legal options for pull
+# 
+st_o=['-r'] # all legal options for timetable
+# a for add, s for show, l for list
 
 if argv[1] == 'init':
-    tt="1"
-    info='F'
-    init_option=[]
+    tt="1"  # default value for timetable type
+    info='F' # default value for information switch
+    init_option=[]  # used to store all options the process got
     if len(argv) > 2:
         for i in argv[2:]: # find all options inputed
             if i.startswith('-'):
@@ -145,9 +181,8 @@ if argv[1] == 'init':
                 tt=reverse_argv[a-1]
             if k == '-i':
                 info=reverse_argv[a-1]
-    print(tt, info)
-    if tt in ['1','2'] and info in ['T','F']:
-        init(tt,info)
+    if tt in ['1','2'] and info in ['T','F']:  # check if values of options are legal
+        init(tt,info)  # call the init function
     else:
         print('illegal option for timetable type')
 
@@ -157,3 +192,12 @@ if argv[1] == 'assi':
 if argv[1] == 'pull':
     print('this part is in development')
     pass
+
+if argv[1] == 'st':
+    if len(argv)<=2:
+        print('options lack! -s for show')
+    else:
+        if argv[2] not in st_o:
+            print('options ERROR!')
+        elif argv[2]=='-r':
+            show_timetable(2)
