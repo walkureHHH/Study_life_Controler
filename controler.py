@@ -60,12 +60,11 @@ def init(time_type,switch):
     hours=[m for m in range(begin_time,end_time+1)]
     course_string=''
     index=0
-    index_list=[]
+    index_list=['']
     for course in courses:
         course_string+='['+str(index)+']'+course+' | '
         index_list.append(str(index))
         index+=1
-    index_list.append('')
     f1=open(PATH+'/'+'.controler.config/timetable.csv',encoding='utf-8',mode='a')
     for hour in hours:
         print(colorama.Fore.WHITE+colorama.Back.RED+'The course in %d:00 - %d:00:'%(hour,hour+1))
@@ -76,15 +75,22 @@ def init(time_type,switch):
             print(colorama.Fore.WHITE+'for '+colorama.Back.RED+day)
             while True:
                 in_of_course=input(colorama.Fore.RED+'Input the index of courses: ')
-                if in_of_course in index_list:
-                    break
+                if in_of_course not in index_list:
+                    a = input(colorama.Fore.WHITE+'Are you sure? Y for yes, N for reinputing: ')
+                    if a == "Y":
+                        break
+                    elif a == 'N':
+                        pass
                 else:
-                    print('ERROR index please input again')
+                    break
             venue=input(colorama.Fore.BLUE+'The venue of it: ')
-            if in_of_course != '':
-                temp1.append(courses[int(in_of_course)])
+            if in_of_course in index_list:
+                if in_of_course != '':
+                    temp1.append(courses[int(in_of_course)])
+                else:
+                    temp1.append('-')
             else:
-                temp1.append('-')
+                temp1.append(in_of_course)
             if venue=='':
                 temp2.append('-')
             else:
