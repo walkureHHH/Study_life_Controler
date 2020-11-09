@@ -33,6 +33,7 @@ def init(time_type,switch):
                 course_info.append(b)
     os.mkdir(PATH+'/'+'Assignment')
     os.mkdir(PATH+'/'+'Resourse')
+    os.mkdir(PATH+'/'+'Note')
     os.mkdir(PATH+'/'+'.controler.config')
     os.mkdir(PATH+'/'+'.controler.config/Timetable')
     for i in courses:
@@ -41,6 +42,8 @@ def init(time_type,switch):
         os.mkdir(PATH+'/'+'Resourse'+'/'+j)
         f = open(PATH+'/'+'Resourse'+'/'+j+'/'+'download.py','w')
         f.close()
+    for p in courses:
+        os.mkdir(PATH+'/'+'Note'+'/'+p)
     f = open(PATH+'/'+'.controler.config/conf',encoding='utf-8',mode='a')
     for k in courses:
         f.write(k+'|')
