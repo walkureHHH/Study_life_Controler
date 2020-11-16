@@ -216,14 +216,19 @@ def resourse(download_path):
                 sleep(1)
                 count+=1
         except KeyboardInterrupt:
-            if_break=input('\nFinish? Y/N: ')
+            resourse_file_list=list(resourse_file)
+            for k in range(0,len(resourse_file_list)):
+                if k ==0 :
+                    print('\n'+resourse_file_list[k])
+                else:
+                    print(resourse_file_list[k])
+                shutil.move(download_path+resourse_file_list[k],PATH+'/Resourse/'+course+'/'+resourse_file_list[k])
+            resourse_file=set()
+            if_break=input(colorama.Fore.YELLOW+'Finish? Y/N: '+colorama.Fore.RESET)
             if if_break=='Y':
                 break
             elif if_break=='N':
-                pass
-    for k in resourse_file:
-        print(k)
-        shutil.move(download_path+k,PATH+'/Resourse/'+course+'/'+k)
+                pass      
 
 def modify_timetable():
     pass
