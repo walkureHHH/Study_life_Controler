@@ -1,8 +1,10 @@
 import os
 import json
+from time import sleep
+import shutil
 import pandas
 import colorama
-colorama.init(autoreset=True)
+colorama.init()
 from sys import argv
 from prettytable import PrettyTable
 
@@ -19,7 +21,7 @@ def init(time_type,switch):
     # generate folders and conf files
     num = 1
     while True:
-        a = input(colorama.Fore.YELLOW+'name of course %d (. to finish): '%num)
+        a = input(colorama.Fore.YELLOW+'name of course %d (. to finish): '%num + colorama.Fore.RESET)
         if a == '':
             pass
         elif a == '.':
@@ -27,7 +29,7 @@ def init(time_type,switch):
         else:
             if info_switch == True:
                 while True:
-                    b = input(colorama.Fore.CYAN+'info for course %d : '%num)
+                    b = input(colorama.Fore.CYAN+'info for course %d : '%num  + colorama.Fore.RESET)
                     if b == '':
                         pass
                     else:
@@ -44,8 +46,6 @@ def init(time_type,switch):
         os.mkdir(PATH+'/'+'Assignment'+'/'+i)
     for j in courses:
         os.mkdir(PATH+'/'+'Resourse'+'/'+j)
-        f = open(PATH+'/'+'Resourse'+'/'+j+'/'+'download.py','w')
-        f.close()
     for p in courses:
         os.mkdir(PATH+'/'+'Note'+'/'+p)
 
@@ -54,7 +54,7 @@ def init(time_type,switch):
         week=['Monday','Tuesday','Wednesday','Thursday','Friday']
     if timetable_type==2:
         week=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
-    time_span=input(colorama.Fore.WHITE+'Time span(example:"8-21"):')
+    time_span=input('Time span(example:"8-21"):')
     begin_time=int(time_span.split('-')[0])
     end_time=int(time_span.split('-')[1])
     hours=[m for m in range(begin_time,end_time+1)]
@@ -67,23 +67,23 @@ def init(time_type,switch):
         index+=1
     f1=open(PATH+'/'+'.controler.config/timetable.csv',encoding='utf-8',mode='a')
     for hour in hours:
-        print(colorama.Fore.WHITE+colorama.Back.RED+'The course in %d:00 - %d:00:'%(hour,hour+1))
-        print(colorama.Fore.GREEN+'('+course_string+')')
+        print(colorama.Back.RED+'The course in %d:00 - %d:00:'%(hour,hour+1)+colorama.Back.RESET)
+        print(colorama.Fore.GREEN+'('+course_string+')'+colorama.Fore.RESET)
         temp1=[]
         temp2=[]
         for day in week:
-            print(colorama.Fore.WHITE+'for '+colorama.Back.RED+day)
+            print('for '+colorama.Back.RED+day + colorama.Back.RESET)
             while True:
-                in_of_course=input(colorama.Fore.RED+'Input the index of courses: ')
+                in_of_course=input(colorama.Fore.RED+'Input the index of courses: ' + colorama.Fore.RESET)
                 if in_of_course not in index_list:
-                    a = input(colorama.Fore.WHITE+'Are you sure? Y for yes, N for reinputing: ')
+                    a = input('Are you sure? Y for yes, N for reinputing: ')
                     if a == "Y":
                         break
                     elif a == 'N':
                         pass
                 else:
                     break
-            venue=input(colorama.Fore.BLUE+'The venue of it: ')
+            venue=input(colorama.Fore.BLUE+'The venue of it: ' + colorama.Fore.RESET)
             if in_of_course in index_list:
                 if in_of_course != '':
                     temp1.append(courses[int(in_of_course)])
@@ -113,8 +113,17 @@ def init(time_type,switch):
     f.close()
 
 def assignment():
-    print('developing')
-    pass
+    PATH=os.getcwd()
+    with open(PATH+'/'+'.controler.config/conf','r',encoding='utf-8') as f:
+        json_dict=json.load(f,encoding='utf-8')
+    courses=json_dict['courses']
+    course_string=''
+    index=0
+    index_list=['']
+    for course in courses:
+        course_string+='['+str(index)+']'+course+' | '
+        index_list.append(str(index))
+        index+=1
 
 def show_timetable(num_of_each_rows):
     PATH=os.getcwd()
@@ -127,6 +136,8 @@ def show_timetable(num_of_each_rows):
     elif json_dict['timetable type']==2:
         num_of_days=7
         days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+    if num_of_each_rows>num_of_days:
+        num_of_each_rows=num_of_days
     begin_time=json_dict['begin time']
     end_time=json_dict['end time']
     x = PrettyTable()
@@ -151,6 +162,69 @@ def show_timetable(num_of_each_rows):
         print(x.get_string(fields=field))
 
 
+def resourse(download_path):
+    PATH=os.getcwd()
+    with open(PATH+'/'+'.controler.config/conf','r',encoding='utf-8') as f:
+        json_dict=json.load(f,encoding='utf-8')
+    
+    if download_path=="[default]":
+        try:
+            download_path=json_dict['default download path']
+        except:
+            print('please init default path first, use "con resourse your/default/path/"')
+            return
+    else:
+        if download_path.endswith('/'):
+            pass
+        else:
+            download_path+='/'
+        json_dict['default download path']=download_path
+        with open(PATH+'/'+'.controler.config/conf','w',encoding='utf-8') as f:
+            json.dump(json_dict,f,sort_keys=True,indent=4)
+    
+    courses=json_dict['courses']
+    support_format=['pdf','doc','docx','ipynb','c','cpp','py','java','ppt','pptx']      # available resourse format
+    course_string=''
+    index=0
+    index_list=['']
+    for course in courses:
+        course_string+='['+str(index)+']'+course+' | '
+        index_list.append(str(index))
+        index+=1
+    set_before=set(os.listdir(download_path))
+    count = 0
+    resourse_file=set()
+
+    print(course_string)
+    index=input(colorama.Fore.YELLOW+'Choose the index of the course which these files belong to: '+colorama.Fore.RESET)
+    course=courses[int(index)]
+
+    while True:
+        try:
+            while True:
+                num=count%6
+                set_after=set(os.listdir(download_path))
+                diff=set_after^set_before
+                for i in diff:
+                    for j in support_format:
+                        try:
+                            if i.split('.')[1]==j:
+                                resourse_file.add(i)
+                        except:
+                            pass
+                print('\rtotal: %03d    '%len(resourse_file)+'waitting'+num*'.'+(5-num)*' '+'    (Ctrl-c to finish)',end='')
+                sleep(1)
+                count+=1
+        except KeyboardInterrupt:
+            if_break=input('\nFinish? Y/N: ')
+            if if_break=='Y':
+                break
+            elif if_break=='N':
+                pass
+    for k in resourse_file:
+        print(k)
+        shutil.move(download_path+k,PATH+'/Resourse/'+course+'/'+k)
+
 def modify_timetable():
     pass
 
@@ -164,8 +238,6 @@ init_o=['-t','-i'] # all legal options for init
 # t for timetable type, i for information switch
 pull_o=['-a','-l','-s'] # all legal options for pull
 # 
-st_o=['-r'] # all legal options for timetable
-# a for add, s for show, l for list
 
 if argv[1] == 'init':
     tt="1"  # default value for timetable type
@@ -201,11 +273,18 @@ if argv[1] == 'pull':
     print('this part is in development')
     pass
 
-if argv[1] == 'st':
-    if len(argv)<=2:
-        print('options lack! -s for show')
+if argv[1] == 'show':
+    if len(argv)!=3:
+        print(len(argv))
+        print('input ERROR')
+    elif argv[2].isdigit()==False:
+        print(argv[2])
+        print('input ERROR')
     else:
-        if argv[2] not in st_o:
-            print('options ERROR!')
-        elif argv[2]=='-r':
-            show_timetable(2)
+        show_timetable(int(argv[2]))
+
+if argv[1] == 'resourse':
+    if len(argv)==3:
+        resourse(argv[2])
+    elif len(argv)==2:
+        resourse("[default]")
