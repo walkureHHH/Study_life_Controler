@@ -1,6 +1,6 @@
 import os
 import json
-from time import sleep
+import time
 import shutil
 import pandas
 import colorama
@@ -112,19 +112,6 @@ def init(time_type,switch):
     f.write(json_data)
     f.close()
 
-def assignment():
-    PATH=os.getcwd()
-    with open(PATH+'/'+'.controler.config/conf','r',encoding='utf-8') as f:
-        json_dict=json.load(f,encoding='utf-8')
-    courses=json_dict['courses']
-    course_string=''
-    index=0
-    index_list=['']
-    for course in courses:
-        course_string+='['+str(index)+']'+course+' | '
-        index_list.append(str(index))
-        index+=1
-
 def show_timetable(num_of_each_rows):
     PATH=os.getcwd()
     timetable=pandas.read_csv(PATH+'/.controler.config/timetable.csv',header=None)
@@ -213,7 +200,7 @@ def resourse(download_path):
                         except:
                             pass
                 print('\rtotal: %03d    '%len(resourse_file)+'waitting'+num*'.'+(5-num)*' '+'    (Ctrl-c to finish)',end='')
-                sleep(1)
+                time.sleep(1)
                 count+=1
         except KeyboardInterrupt:
             resourse_file_list=list(resourse_file)
@@ -230,20 +217,41 @@ def resourse(download_path):
             elif if_break=='N':
                 pass      
 
-def modify_timetable():
-    pass
-
-def timetable_to_html(path):
-    pass
-
-def import_conf():
-    pass
+def bill(name,bill_):
+    append_list=[float(j) for j in bill_.split(',')]
+    PATH=os.getcwd()+'/'+'.controler.config/'+name
+    cur_time=time.strftime('%Y-%m-%d %X')
+    if os.path.exists(PATH):
+        with open(PATH,'r') as f:
+            json_dict=json.load(f)
+        bill_list=json_dict['bill']
+        date_list=json_dict['date']
+    else:
+        while True:
+            a = input(colorama.Fore.RED+'Creat a new bill named '+name+'?  Y/N : '+colorama.Fore.RESET)
+            if a == 'Y':
+                break
+            elif a == 'N':
+                return
+            else:
+                print('input error, please input again')
+        bill_list=[]
+        date_list=[]
+        json_dict={}
+    for i in append_list:
+        bill_list.append(i)
+        date_list.append(cur_time)
+    json_dict['bill']=bill_list
+    json_dict['date']=date_list
+    with open(PATH,'w') as f:
+        json.dump(json_dict,f,sort_keys=True,indent=4)
         
+
+def show_bill_average(name):
+    pass
+
 init_o=['-t','-i'] # all legal options for init
 # t for timetable type, i for information switch
-pull_o=['-a','-l','-s'] # all legal options for pull
-# 
-
 if argv[1] == 'init':
     tt="1"  # default value for timetable type
     info='F' # default value for information switch
@@ -271,13 +279,6 @@ if argv[1] == 'init':
     else:
         print('illegal option for timetable type')
 
-if argv[1] == 'assi':
-    assignment()
-
-if argv[1] == 'pull':
-    print('this part is in development')
-    pass
-
 if argv[1] == 'show':
     if len(argv)!=3:
         print(len(argv))
@@ -293,3 +294,9 @@ if argv[1] == 'resourse':
         resourse(argv[2])
     elif len(argv)==2:
         resourse("[default]")
+
+if argv[1] == 'bill':
+    if len(argv)==4:
+        bill(argv[2],argv[3])
+    else:
+        print('input error!')
