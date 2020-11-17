@@ -247,8 +247,29 @@ def bill(name,bill_):
         json.dump(json_dict,f,sort_keys=True,indent=4)
         
 
-def show_bill_average(name):
-    pass
+def show_bill_detail(name):
+    PATH=os.getcwd()+'/'+'.controler.config/'+name
+    if os.path.exists(PATH)==False:
+        print('Bill is not exits!')
+        return
+    with open(PATH,'r') as f:
+        json_dict=json.load(f)
+    bill_list=json_dict['bill']
+    date_list=[i.split(' ')[0] for i in json_dict['date']]
+    sum_bill=0
+    for j in bill_list:
+        sum_bill+=j
+    sum_days=0
+    counted_date=[]
+    for k in date_list:
+        if k not in counted_date:
+            counted_date.append(k)
+            sum_days+=1
+        else:
+            pass
+    print('From %s to %s'%(date_list[0],date_list[-1]))
+    print('Record days: %d ,  Totle comsumeption: %.2f ,  Average: %.2f'%(sum_days,sum_bill,sum_bill/sum_days))
+
 
 init_o=['-t','-i'] # all legal options for init
 # t for timetable type, i for information switch
@@ -298,5 +319,11 @@ if argv[1] == 'resourse':
 if argv[1] == 'bill':
     if len(argv)==4:
         bill(argv[2],argv[3])
+    else:
+        print('input error!')
+
+if argv[1] == 'bill_show' or argv[1] == 'show_bill':
+    if len(argv)==3:
+        show_bill_detail(argv[2])
     else:
         print('input error!')
