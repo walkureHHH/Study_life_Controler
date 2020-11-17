@@ -245,10 +245,10 @@ def bill(name,bill_):
     json_dict['date']=date_list
     with open(PATH,'w') as f:
         json.dump(json_dict,f,sort_keys=True,indent=4)
-        
+    print('Add %s to %s in %s'%(bill_,name,cur_time)) 
 
 def show_bill_detail(name):
-    PATH=os.getcwd()+'/'+'.controler.config/'+name
+    PATH=os.getcwd()+'/'+'.controler.config/'+name+'.bill'
     if os.path.exists(PATH)==False:
         print('Bill is not exits!')
         return
@@ -268,8 +268,7 @@ def show_bill_detail(name):
         else:
             pass
     print('From %s to %s'%(date_list[0],date_list[-1]))
-    print('Record days: %d ,  Totle comsumeption: %.2f ,  Average: %.2f'%(sum_days,sum_bill,sum_bill/sum_days))
-
+    print('Record days: %d ,  Totle comsumeption: %.2f ,  Average: %.2f/day'%(sum_days,sum_bill,sum_bill/sum_days))
 
 init_o=['-t','-i'] # all legal options for init
 # t for timetable type, i for information switch
