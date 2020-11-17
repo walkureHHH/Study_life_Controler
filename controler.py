@@ -158,7 +158,7 @@ def resourse(download_path):
         try:
             download_path=json_dict['default download path']
         except:
-            print('please init default path first, use "con resourse your/default/path/"')
+            print('please init default path first, use "cler resourse your/default/path/"')
             return
     else:
         if download_path.endswith('/'):
@@ -170,7 +170,7 @@ def resourse(download_path):
             json.dump(json_dict,f,sort_keys=True,indent=4)
     
     courses=json_dict['courses']
-    support_format=['pdf','doc','docx','ipynb','c','cpp','py','java','ppt','pptx']      # available resourse format
+    support_format=['pdf','doc','docx','ipynb','c','cpp','py','java','ppt','pptx','mp3','mp4']      # available resourse format
     course_string=''
     index=0
     index_list=['']
@@ -219,7 +219,7 @@ def resourse(download_path):
 
 def bill(name,bill_):
     append_list=[float(j) for j in bill_.split(',')]
-    PATH=os.getcwd()+'/'+'.controler.config/'+name
+    PATH=os.getcwd()+'/'+'.controler.config/'+name+'.bill'
     cur_time=time.strftime('%Y-%m-%d %X')
     if os.path.exists(PATH):
         with open(PATH,'r') as f:
@@ -326,3 +326,21 @@ if argv[1] == 'bill_show' or argv[1] == 'show_bill':
         show_bill_detail(argv[2])
     else:
         print('input error!')
+
+if argv[1] == 'version':
+    print('Studying controler version 1.0.0')
+if argv[1] == 'help':
+    print(
+"""init
+    -t: timetable type, 1 for Monday-Friday(default), 2 for Monday-Sunday
+    -i: if you want add information for each course, T or F(default)
+
+show [num] ,show time table, [num] of column each raw
+
+resourse [default path(optional, but when you first use the command, you must have it)]
+
+bill [bill] [num], add a consumeption record to [bill]
+
+show_bill or bill_show [bill], show details of [bill]
+"""
+    )
