@@ -54,7 +54,10 @@ def init(time_type,switch):
         week=['Monday','Tuesday','Wednesday','Thursday','Friday']
     if timetable_type==2:
         week=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
-    time_span=input('Time span(example:"8-21"):')
+    while True:
+        time_span=input('Time span(example:"8-21"):')
+        if time_span != '':
+            break
     begin_time=int(time_span.split('-')[0])
     end_time=int(time_span.split('-')[1])
     hours=[m for m in range(begin_time,end_time+1)]
@@ -269,3 +272,51 @@ def show_bill_detail(name):
             pass
     print('From %s to %s'%(date_list[0],date_list[-1]))
     print('Record days: %d ,  Totle comsumeption: %.2f ,  Average: %.2f/day'%(sum_days,sum_bill,sum_bill/sum_days))
+
+argument_list=['init','tb','bill','version','help']
+option_list=[['-t','-i'],['show'],['add','show'],None,None]
+if argv[1] not in argument_list:
+    raise Exception('Argument ERROR!   %s'%argv[1])
+if argv[1] == 'init':
+    op=argv[2:]
+    op_dic={}
+    if len(op)%2!=0:
+        raise Exception('number of argument is wrong!   %d'%len(op))
+    for i in range(0,len(op)):
+        if i%2==0:
+            if op[i] not in option_list[0]:
+                raise Exception('options ERROR!   %s'%op[i])
+            op_dic[op[i]]=op[i+1]
+    t=1
+    i='T'
+    if '-t' in op_dic:
+        t=op_dic['-t']
+    if '-i' in op_dic:
+        i=op_dic['-i']
+    init(t,i)
+elif argv[1] == 'tb':
+    op=argv[2:]
+    op_dic={}
+    if len(op)%2!=0:
+        raise Exception('number of argument is wrong!   %d'%len(op))
+    for i in range(0,len(op)):
+        if i%2==0:
+            if op[i] not in option_list[1]:
+                raise Exception('options ERROR!   %s'%op[i])
+            op_dic[op[i]]=op[i+1]
+    print(op_dic)
+elif argv[1] == 'bill':
+    if argv[2] == 'add':
+        op=argv[3:]
+        if len(op)%2!=0 or len(op)<=0:
+            raise Exception('number of argument is wrong!   %d'%len(op))
+    elif argv[2] == 'show':
+        op=argv[3:]
+        if len(op)%2!=0 or len(op)<=0:
+            raise Exception('number of argument is wrong!   %d'%len(op))
+    else:
+        raise Exception('Argument options!')
+elif argv[1] == 'version':
+    print('Studying controler version 1.0.1 @Kylis\ngithub: https://github.com/walkureHHH/Study_life_Controler')
+elif argv[1] == 'help':
+    print()
