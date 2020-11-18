@@ -178,10 +178,10 @@ def resourse(download_path):
         course_string+='['+str(index)+']'+course+' | '
         index_list.append(str(index))
         index+=1
+    print(colorama.Back.RED+"Now default download PATH is %s"%download_path+colorama.Back.RESET)
     set_before=set(os.listdir(download_path))
     count = 0
     resourse_file=set()
-
     print(course_string)
     index=input(colorama.Fore.YELLOW+'Choose the index of the course which these files belong to: '+colorama.Fore.RESET)
     course=courses[int(index)]
@@ -211,11 +211,11 @@ def resourse(download_path):
                     print(resourse_file_list[k])
                 shutil.move(download_path+resourse_file_list[k],PATH+'/Resourse/'+course+'/'+resourse_file_list[k])
             resourse_file=set()
-            if_break=input(colorama.Fore.YELLOW+'Finish? Y/N: '+colorama.Fore.RESET)
+            if_break=input(colorama.Fore.YELLOW+'\nFinish? Y/N: '+colorama.Fore.RESET)
             if if_break=='Y':
                 break
             elif if_break=='N':
-                pass      
+                pass
 
 def bill(name,bill_):
     append_list=[float(j) for j in bill_.split(',')]
@@ -327,19 +327,19 @@ if argv[1] == 'bill_show' or argv[1] == 'show_bill':
         print('input error!')
 
 if argv[1] == 'version':
-    print('Studying controler version 1.0.0')
+    print('Studying controler version 1.0.1 @Kylis\ngithub: https://github.com/walkureHHH/Study_life_Controler')
 if argv[1] == 'help':
     print(
-"""init
-    -t: timetable type, 1 for Monday-Friday(default), 2 for Monday-Sunday
-    -i: if you want add information for each course, T or F(default)
+"""~ init
+      -t: timetable type, 1 for Monday-Friday(default), 2 for Monday-Sunday
+      -i: if you want add information for each course, T or F(default)
 
-show [num] ,show time table, [num] of column each raw
+~ show [num] ,show time table, [num] of column each raw
 
-resourse [default path(optional, but when you first use the command, you must have it)]
+~ resourse [default path(optional, but when you first use the command, you must have it)]
 
-bill [bill] [num], add a consumeption record to [bill]
+~ bill [bill] [num], add a consumeption record to [bill]
 
-show_bill or bill_show [bill], show details of [bill]
+~ show_bill or bill_show [bill], show details of [bill]
 """
     )
