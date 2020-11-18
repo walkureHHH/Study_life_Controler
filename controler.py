@@ -301,7 +301,6 @@ if argv[1] == 'init':
 
 if argv[1] == 'show':
     if len(argv)!=3:
-        print(len(argv))
         print('input ERROR')
     elif argv[2].isdigit()==False:
         print(argv[2])
