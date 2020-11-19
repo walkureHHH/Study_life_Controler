@@ -273,8 +273,8 @@ def show_bill_detail(name):
     print('From %s to %s'%(date_list[0],date_list[-1]))
     print('Record days: %d ,  Totle comsumeption: %.2f ,  Average: %.2f/day'%(sum_days,sum_bill,sum_bill/sum_days))
 
-argument_list=['init','tb','bill','version','help']
-option_list=[['-t','-i'],['show'],['add','show'],None,None]
+argument_list=['init','tb','resourse','bill','version','help']
+option_list=[['-t','-i'],['show'],['path'],['add','show'],None,None]
 if argv[1] not in argument_list:
     raise Exception('Argument ERROR!   %s'%argv[1])
 if argv[1] == 'init':
@@ -304,7 +304,13 @@ elif argv[1] == 'tb':
             if op[i] not in option_list[1]:
                 raise Exception('options ERROR!   %s'%op[i])
             op_dic[op[i]]=op[i+1]
-    print(op_dic)
+    row = 5
+    if 'show' in op_dic:
+        row = int(op_dic['show'])
+    print(row)
+    show_timetable(row)
+elif argv[1] == 'resourse':
+    pass
 elif argv[1] == 'bill':
     if argv[2] == 'add':
         op=argv[3:]
