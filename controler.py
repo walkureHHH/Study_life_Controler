@@ -221,7 +221,10 @@ def resourse(download_path):
                 pass
 
 def bill(name,bill_):
-    append_list=[float(j) for j in bill_.split(',')]
+    try:
+        append_list=[float(j) for j in bill_.split(',')]
+    except:
+        print('ERROR input %s'%bill_)
     PATH=os.getcwd()+'/'+'.controler.config/'+name+'.bill'
     cur_time=time.strftime('%Y-%m-%d %X')
     if os.path.exists(PATH):
@@ -310,19 +313,42 @@ elif argv[1] == 'tb':
     print(row)
     show_timetable(row)
 elif argv[1] == 'resourse':
-    pass
+    op=argv[2:]
+    if len(op)==0:
+        resourse('[default]')
+    else:
+        path = op[-1]
+        resourse(path)
 elif argv[1] == 'bill':
     if argv[2] == 'add':
         op=argv[3:]
+        bill_name=''
+        bill_num=''
         if len(op)%2!=0 or len(op)<=0:
             raise Exception('number of argument is wrong!   %d'%len(op))
+        for i in range(0,len(op)):
+            if i%2==0:
+                bill_name = op[i+1]
+                bill_num = op[i]
+        bill(bill_name,bill_num)
     elif argv[2] == 'show':
         op=argv[3:]
-        if len(op)%2!=0 or len(op)<=0:
-            raise Exception('number of argument is wrong!   %d'%len(op))
+        name = op[-1]
+        show_bill_detail(name)
     else:
         raise Exception('Argument options!')
 elif argv[1] == 'version':
-    print('Studying controler version 1.0.1 @Kylis\ngithub: https://github.com/walkureHHH/Study_life_Controler')
+    print('Studying controler version 1.0.1 @Kylis\ngithub: https://github.com/walkureHHH/Study_life_Controler\n(argument branch)')
 elif argv[1] == 'help':
-    print()
+    print("""~ init
+    -t: timetable type, 1 for Monday-Friday(default), 2 for Monday-Sunday
+    -i:if you want add information for each course, T or F(default)
+
+~ tb show [number of days each rows]
+
+~ resourse [default path(optional, but when you first use the command, you must have it)]
+
+~ bill add [num] [name]
+
+~ bill show [name]
+""")
