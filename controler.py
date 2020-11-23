@@ -225,6 +225,7 @@ def bill(name,bill_):
         append_list=[float(j) for j in bill_.split(',')]
     except:
         print('ERROR input %s'%bill_)
+        return
     PATH=os.getcwd()+'/'+'.controler.config/'+name+'.bill'
     cur_time=time.strftime('%Y-%m-%d %X')
     if os.path.exists(PATH):
@@ -351,4 +352,4 @@ elif argv[1] == 'help':
 ~ bill add [num] [name]
 
 ~ bill show [name]
-""")
+""") 
