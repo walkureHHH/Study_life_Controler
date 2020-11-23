@@ -4,6 +4,7 @@ import time
 import shutil
 import pandas
 import colorama
+import datetime
 colorama.init()
 from sys import argv
 from prettytable import PrettyTable
@@ -263,6 +264,9 @@ def show_bill_detail(name):
         json_dict=json.load(f)
     bill_list=json_dict['bill']
     date_list=[i.split(' ')[0] for i in json_dict['date']]
+    d1 = datetime.datetime(int(date_list[1].split('-')[0]),int(date_list[1].split('-')[1]),int(date_list[1].split('-')[2]))
+    d2 = datetime.datetime(int(date_list[-1].split('-')[0]),int(date_list[-1].split('-')[1]),int(date_list[-1].split('-')[2]))
+    interval = (d2-d1).days+1
     sum_bill=0
     for j in bill_list:
         sum_bill+=j
@@ -275,7 +279,7 @@ def show_bill_detail(name):
         else:
             pass
     print('From %s to %s'%(date_list[0],date_list[-1]))
-    print('Record days: %d ,  Totle comsumeption: %.2f ,  Average: %.2f/day'%(sum_days,sum_bill,sum_bill/sum_days))
+    print('Record days: %d ,  Totle comsumeption: %.2f ,  Average: %.2f/day'%(interval,sum_bill,sum_bill/interval))
 
 argument_list=['init','tb','resourse','bill','version','help']
 option_list=[['-t','-i'],['show'],['path'],['add','show'],None,None]
@@ -339,7 +343,7 @@ elif argv[1] == 'bill':
     else:
         raise Exception('Argument options!')
 elif argv[1] == 'version':
-    print('Studying controler version 1.0.1 @Kylis\ngithub: https://github.com/walkureHHH/Study_life_Controler\n(argument branch)')
+    print('Studying controler version 1.0.2 @Kylis\ngithub: https://github.com/walkureHHH/Study_life_Controler\n(argument branch)')
 elif argv[1] == 'help':
     print("""~ init
     -t: timetable type, 1 for Monday-Friday(default), 2 for Monday-Sunday
